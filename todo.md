@@ -53,3 +53,14 @@
 - [x] Aba de comprovantes integrada no painel admin
 - [x] Upload real de comprovantes para S3 (storagePut)
 - [x] TypeScript compilando sem erros
+
+
+## Integração PIX (Nova Feature)
+- [x] Adicionar coluna de método de pagamento na tabela orders
+- [x] Armazenar chave PIX do administrador nas variáveis de ambiente
+- [x] Router: criar pedido com opção de pagamento PIX
+- [x] Página de checkout: opção de escolher entre Stripe e PIX
+- [x] Página de instruções PIX: exibir chave PIX e instruções de pagamento
+- [x] Botão para enviar comprovante do PIX
+- [x] Fluxo de comprovante PIX integrado com validação manual
+- [x] TypeScript compilando sem erros

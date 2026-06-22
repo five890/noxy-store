@@ -97,6 +97,7 @@ export const orders = mysqlTable("orders", {
   status: mysqlEnum("status", ["pending", "paid", "processing", "shipped", "delivered", "cancelled"])
     .default("pending")
     .notNull(),
+  paymentMethod: mysqlEnum("paymentMethod", ["stripe", "pix"]).default("stripe").notNull(),
   totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
   customerName: varchar("customerName", { length: 256 }),
   customerEmail: varchar("customerEmail", { length: 320 }),

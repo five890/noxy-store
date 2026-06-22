@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import {
   clearCart,
@@ -34,6 +35,7 @@ export const ordersRouter = router({
         customerName: z.string().min(1),
         customerEmail: z.string().email(),
         shippingAddress: z.string().min(1),
+        paymentMethod: z.enum(["stripe", "pix"]).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -54,6 +56,7 @@ export const ordersRouter = router({
           customerEmail: input.customerEmail,
           shippingAddress: input.shippingAddress,
           status: "pending",
+          paymentMethod: input.paymentMethod ?? "stripe",
         },
         cartItemsList.map((item) => ({
           orderId: 0,

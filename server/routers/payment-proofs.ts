@@ -9,7 +9,7 @@ import {
   approvePaymentProof,
   rejectPaymentProof,
 } from "../db.payment-proofs";
-import { getOrderById } from "../db";
+import { getOrderById, updateOrderStatus } from "../db";
 import { protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { storagePut } from "../storage";
 
@@ -134,6 +134,13 @@ export const paymentProofsRouter = router({
       }
 
       await approvePaymentProof(input.id, ctx.user.id, input.notes);
+      
+      // Atualizar status do pedido para "paid"
+      const order = await getOrderById(proof.orderId);
+      if (order) {
+        await updateOrderStatus(proof.orderId, "paid");
+      }
+      
       return { success: true, status: "approved" };
     }),
 

@@ -3,12 +3,14 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import StoreLayout from "@/components/StoreLayout";
-import { ArrowRight, CreditCard, Lock, ShoppingBag } from "lucide-react";
+import { ArrowRight, CreditCard, Lock, ShoppingBag, QrCode } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export default function Checkout() {
   const { isAuthenticated, user } = useAuth();
+  const [, setLocation] = useLocation();
+  const [paymentMethod, setPaymentMethod] = useState<"stripe" | "pix">("stripe");
 
   const [form, setForm] = useState({
     customerName: user?.name ?? "",
@@ -41,12 +43,21 @@ export default function Checkout() {
     }
 
     try {
-      const { orderId } = await createOrder.mutateAsync(form);
-      await createCheckout.mutateAsync({
-        orderId,
-        customerName: form.customerName,
-        customerEmail: form.customerEmail,
+      const { orderId } = await createOrder.mutateAsync({
+        ...form,
+        paymentMethod,
       });
+
+      if (paymentMethod === "stripe") {
+        await createCheckout.mutateAsync({
+          orderId,
+          customerName: form.customerName,
+          customerEmail: form.customerEmail,
+        });
+      } else {
+        // PIX: redirecionar para página de instruções
+        setLocation(`/pedido/${orderId}/pix`);
+      }
     } catch (err: any) {
       toast.error(err.message || "Erro ao processar pedido");
     }
@@ -81,25 +92,24 @@ export default function Checkout() {
     return (
       <StoreLayout>
         <div className="container py-20 text-center">
-          <ShoppingBag size={60} className="mx-auto mb-6" style={{ color: "var(--color-gold-muted)" }} />
+          <ShoppingBag size={60} className="mx-auto mb-4" style={{ color: "var(--color-gold)" }} />
           <h1 className="font-serif text-3xl mb-4" style={{ color: "var(--color-ivory)" }}>
-            Seu carrinho está vazio
+            Carrinho vazio
           </h1>
-          <Link
-            href="/catalogo"
-            className="inline-flex items-center gap-3 px-8 py-4 text-xs tracking-widest uppercase font-semibold"
-            style={{
-              backgroundColor: "var(--color-gold)",
-              color: "var(--color-obsidian)",
-              fontFamily: "var(--font-sans)",
-            }}
-          >
-            Explorar Catálogo
+          <Link href="/catalogo" className="text-sm" style={{ color: "var(--color-gold)", fontFamily: "var(--font-sans)" }}>
+            Voltar ao catálogo
           </Link>
         </div>
       </StoreLayout>
     );
   }
+
+  const inputStyle = {
+    backgroundColor: "var(--color-graphite)",
+    color: "var(--color-ivory)",
+    borderColor: "var(--color-smoke)",
+    fontFamily: "var(--font-sans)",
+  };
 
   return (
     <StoreLayout>
@@ -115,7 +125,7 @@ export default function Checkout() {
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="h-px w-16" style={{ background: "linear-gradient(90deg, transparent, var(--color-gold))" }} />
             <span className="text-xs tracking-[0.5em] uppercase" style={{ color: "var(--color-gold)", fontFamily: "var(--font-sans)" }}>
-              Finalização
+              Finalizar Compra
             </span>
             <div className="h-px w-16" style={{ background: "linear-gradient(90deg, var(--color-gold), transparent)" }} />
           </div>
@@ -125,26 +135,23 @@ export default function Checkout() {
         </div>
       </section>
 
-      <div className="container py-10">
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* ── Form ──────────────────────────────────────────────── */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Customer Info */}
+      <div className="container py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Formulário */}
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Dados Pessoais */}
               <div
                 className="p-6 border relative"
                 style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
               >
                 <div className="absolute top-3 left-3 w-5 h-5 border-t border-l" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-                <div className="absolute bottom-3 right-3 w-5 h-5 border-b border-r" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-
                 <h2 className="font-serif text-xl font-bold mb-6" style={{ color: "var(--color-ivory)" }}>
-                  Dados do Cliente
+                  Dados Pessoais
                 </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-xs tracking-widest uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                    <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
                       Nome Completo *
                     </label>
                     <input
@@ -153,12 +160,12 @@ export default function Checkout() {
                       onChange={(e) => setForm({ ...form, customerName: e.target.value })}
                       required
                       className="w-full px-4 py-3 text-sm outline-none border"
-                      style={{ backgroundColor: "var(--color-graphite)", color: "var(--color-ivory)", borderColor: "var(--color-smoke)", fontFamily: "var(--font-sans)" }}
+                      style={inputStyle}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs tracking-widest uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
-                      E-mail *
+                    <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                      Email *
                     </label>
                     <input
                       type="email"
@@ -166,110 +173,166 @@ export default function Checkout() {
                       onChange={(e) => setForm({ ...form, customerEmail: e.target.value })}
                       required
                       className="w-full px-4 py-3 text-sm outline-none border"
-                      style={{ backgroundColor: "var(--color-graphite)", color: "var(--color-ivory)", borderColor: "var(--color-smoke)", fontFamily: "var(--font-sans)" }}
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                      Endereço de Entrega *
+                    </label>
+                    <textarea
+                      value={form.shippingAddress}
+                      onChange={(e) => setForm({ ...form, shippingAddress: e.target.value })}
+                      required
+                      rows={3}
+                      className="w-full px-4 py-3 text-sm outline-none border resize-none"
+                      style={inputStyle}
+                      placeholder="Rua, número, complemento, cidade, estado, CEP"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Shipping */}
+              {/* Método de Pagamento */}
               <div
                 className="p-6 border relative"
                 style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
               >
                 <div className="absolute top-3 left-3 w-5 h-5 border-t border-l" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-                <div className="absolute bottom-3 right-3 w-5 h-5 border-b border-r" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-
                 <h2 className="font-serif text-xl font-bold mb-6" style={{ color: "var(--color-ivory)" }}>
-                  Endereço de Entrega
+                  Método de Pagamento
                 </h2>
-
-                <div>
-                  <label className="block text-xs tracking-widest uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
-                    Endereço Completo *
+                <div className="space-y-3">
+                  {/* Stripe */}
+                  <label
+                    className="flex items-center gap-4 p-4 border cursor-pointer transition-all"
+                    style={{
+                      backgroundColor: paymentMethod === "stripe" ? "var(--color-graphite)" : "transparent",
+                      borderColor: paymentMethod === "stripe" ? "var(--color-gold)" : "var(--color-smoke)",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="stripe"
+                      checked={paymentMethod === "stripe"}
+                      onChange={(e) => setPaymentMethod(e.target.value as "stripe" | "pix")}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <div className="flex items-center gap-3">
+                      <CreditCard size={20} style={{ color: "var(--color-gold)" }} />
+                      <div>
+                        <p className="font-semibold" style={{ color: "var(--color-ivory)" }}>
+                          Cartão de Crédito (Stripe)
+                        </p>
+                        <p className="text-xs" style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
+                          Pague com segurança usando seu cartão
+                        </p>
+                      </div>
+                    </div>
                   </label>
-                  <textarea
-                    value={form.shippingAddress}
-                    onChange={(e) => setForm({ ...form, shippingAddress: e.target.value })}
-                    required
-                    rows={3}
-                    placeholder="Rua, número, bairro, cidade, estado, CEP"
-                    className="w-full px-4 py-3 text-sm outline-none border resize-none"
-                    style={{ backgroundColor: "var(--color-graphite)", color: "var(--color-ivory)", borderColor: "var(--color-smoke)", fontFamily: "var(--font-sans)" }}
-                  />
+
+                  {/* PIX */}
+                  <label
+                    className="flex items-center gap-4 p-4 border cursor-pointer transition-all"
+                    style={{
+                      backgroundColor: paymentMethod === "pix" ? "var(--color-graphite)" : "transparent",
+                      borderColor: paymentMethod === "pix" ? "var(--color-gold)" : "var(--color-smoke)",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="pix"
+                      checked={paymentMethod === "pix"}
+                      onChange={(e) => setPaymentMethod(e.target.value as "stripe" | "pix")}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <div className="flex items-center gap-3">
+                      <QrCode size={20} style={{ color: "var(--color-gold)" }} />
+                      <div>
+                        <p className="font-semibold" style={{ color: "var(--color-ivory)" }}>
+                          PIX
+                        </p>
+                        <p className="text-xs" style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
+                          Transferência instantânea via PIX
+                        </p>
+                      </div>
+                    </div>
+                  </label>
                 </div>
               </div>
 
-              {/* Payment notice */}
-              <div
-                className="p-4 border flex items-start gap-3"
-                style={{ backgroundColor: "oklch(74% 0.14 82 / 0.05)", borderColor: "var(--color-gold-muted)" }}
+              {/* Botão Submit */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-3 py-4 text-xs tracking-widest uppercase font-semibold transition-all hover:scale-[1.02] disabled:opacity-50"
+                style={{
+                  backgroundColor: "var(--color-gold)",
+                  color: "var(--color-obsidian)",
+                  fontFamily: "var(--font-sans)",
+                  boxShadow: "var(--shadow-gold)",
+                }}
               >
-                <Lock size={16} style={{ color: "var(--color-gold)", flexShrink: 0, marginTop: 2 }} />
-                <div>
-                  <p className="text-xs font-semibold mb-1" style={{ color: "var(--color-gold)", fontFamily: "var(--font-sans)" }}>
-                    Pagamento Seguro via Stripe
-                  </p>
-                  <p className="text-xs" style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
-                    Ao confirmar, você será redirecionado para o ambiente seguro do Stripe para inserir seus dados de pagamento. Use o cartão <strong>4242 4242 4242 4242</strong> para testes.
-                  </p>
-                </div>
-              </div>
-            </div>
+                <Lock size={16} />
+                {isLoading ? "Processando..." : "Continuar para Pagamento"}
+                <ArrowRight size={16} />
+              </button>
+            </form>
+          </div>
 
-            {/* ── Order Summary ──────────────────────────────────────── */}
-            <div className="lg:col-span-1">
-              <div
-                className="p-6 border sticky top-24 relative"
-                style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
-              >
-                <div className="absolute top-3 left-3 w-5 h-5 border-t border-l" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-                <div className="absolute bottom-3 right-3 w-5 h-5 border-b border-r" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
+          {/* Resumo do Pedido */}
+          <div>
+            <div
+              className="p-6 border sticky top-24 h-fit relative"
+              style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
+            >
+              <div className="absolute top-3 right-3 w-5 h-5 border-b border-r" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
+              <h2 className="font-serif text-xl font-bold mb-6" style={{ color: "var(--color-ivory)" }}>
+                Resumo do Pedido
+              </h2>
 
-                <h2 className="font-serif text-xl font-bold mb-6" style={{ color: "var(--color-ivory)" }}>
-                  Resumo do Pedido
-                </h2>
-
-                <div className="space-y-3 mb-4">
-                  {cart.items.map((item) => (
-                    <div key={item.id} className="flex justify-between gap-2">
-                      <span className="text-sm flex-1 truncate" style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
-                        {item.productName} × {item.quantity}
+              <div className="space-y-3 mb-6 pb-6 border-b" style={{ borderColor: "var(--color-smoke)" }}>
+                {cart?.items.map((item) => {
+                  const itemTotal = Number(item.productPrice) * item.quantity;
+                  return (
+                    <div key={item.id} className="flex justify-between text-sm">
+                      <span style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
+                        {item.productName} x{item.quantity}
                       </span>
-                      <span className="text-sm font-semibold flex-shrink-0" style={{ color: "var(--color-ivory)", fontFamily: "var(--font-sans)" }}>
-                        {(Number(item.productPrice) * item.quantity).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      <span style={{ color: "var(--color-gold)" }}>
+                        {itemTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                       </span>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
+              </div>
 
-                <div className="h-px mb-4" style={{ backgroundColor: "var(--color-smoke)" }} />
-
-                <div className="flex justify-between mb-8">
-                  <span className="font-serif text-lg font-bold" style={{ color: "var(--color-ivory)" }}>Total</span>
-                  <span className="font-serif text-2xl font-bold" style={{ color: "var(--color-gold)" }}>
-                    {cart.subtotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              <div className="space-y-2 mb-6 pb-6 border-b" style={{ borderColor: "var(--color-smoke)" }}>
+                <div className="flex justify-between text-sm">
+                  <span style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>Subtotal:</span>
+                  <span style={{ color: "var(--color-ivory)" }}>
+                    {Number(cart?.subtotal ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>Frete:</span>
+                  <span style={{ color: "var(--color-gold)" }}>Grátis</span>
+                </div>
+              </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-3 py-4 text-xs tracking-widest uppercase font-semibold transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
-                  style={{
-                    backgroundColor: "var(--color-gold)",
-                    color: "var(--color-obsidian)",
-                    fontFamily: "var(--font-sans)",
-                    boxShadow: "var(--shadow-gold)",
-                  }}
-                >
-                  <CreditCard size={16} />
-                  {isLoading ? "Processando..." : "Pagar com Stripe"}
-                </button>
+              <div className="flex justify-between items-center">
+                <span className="font-serif text-lg" style={{ color: "var(--color-gold-muted)" }}>
+                  Total:
+                </span>
+                <span className="font-serif text-2xl font-bold" style={{ color: "var(--color-gold)" }}>
+                  {Number(cart?.subtotal ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </span>
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </StoreLayout>
   );
