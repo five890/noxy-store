@@ -105,6 +105,7 @@ export const orders = mysqlTable("orders", {
   stripeSessionId: varchar("stripeSessionId", { length: 256 }),
   stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 256 }),
   notes: text("notes"),
+  estimatedDeliveryDate: timestamp("estimatedDeliveryDate"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

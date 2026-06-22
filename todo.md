@@ -64,3 +64,12 @@
 - [x] Botão para enviar comprovante do PIX
 - [x] Fluxo de comprovante PIX integrado com validação manual
 - [x] TypeScript compilando sem erros
+
+
+## Data de Entrega Prevista (Nova Feature)
+- [x] Adicionar coluna estimatedDeliveryDate na tabela orders
+- [x] Migração SQL para a nova coluna
+- [x] Router: atualizar data de entrega (admin)
+- [x] Página Meus Pedidos: exibir data de entrega prevista e status
+- [x] Painel Admin: interface para definir data de entrega por pedido
+- [x] TypeScript compilando sem erros

@@ -6,11 +6,13 @@ import {
   createOrder,
   getAllOrders,
   getCartItems,
+  getDb,
   getOrderById,
   getOrderItems,
   getOrdersByUser,
   updateOrderStatus,
 } from "../db";
+import { orders } from "../../drizzle/schema";
 import { adminProcedure, protectedProcedure, router } from "../_core/trpc";
 
 export const ordersRouter = router({
@@ -100,6 +102,30 @@ export const ordersRouter = router({
     )
     .mutation(async ({ input }) => {
       await updateOrderStatus(input.id, input.status);
+      return { success: true };
+    }),
+
+  updateDeliveryDate: adminProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        estimatedDeliveryDate: z.date().or(z.null()),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const order = await getOrderById(input.id);
+      if (!order) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Pedido nao encontrado" });
+      }
+      
+      const db = await getDb();
+      if (!db) throw new Error("DB not available");
+      
+      await db
+        .update(orders)
+        .set({ estimatedDeliveryDate: input.estimatedDeliveryDate })
+        .where(eq(orders.id, input.id));
+      
       return { success: true };
     }),
 });

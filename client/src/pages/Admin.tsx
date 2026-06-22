@@ -560,9 +560,20 @@ function CategoriesTab() {
 
 // ─── Orders Tab ───────────────────────────────────────────────────────────────
 function OrdersTab() {
+  const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
+  const [deliveryDates, setDeliveryDates] = useState<Record<number, string>>({});
   const utils = trpc.useUtils();
   const { data: ordersData, isLoading } = trpc.orders.adminList.useQuery();
   const updateStatus = trpc.orders.updateStatus.useMutation({ onSuccess: () => { utils.orders.adminList.invalidate(); toast.success("Status atualizado!"); } });
+  const updateDeliveryDate = trpc.orders.updateDeliveryDate.useMutation({
+    onSuccess: () => {
+      utils.orders.adminList.invalidate();
+      toast.success("Data de entrega atualizada!");
+      setExpandedOrder(null);
+      setDeliveryDates({});
+    },
+    onError: (err) => toast.error(err.message || "Erro ao atualizar data"),
+  });
 
   const statusLabels: Record<string, { label: string; color: string }> = {
     pending: { label: "Aguardando", color: "var(--color-warning)" },
@@ -588,32 +599,78 @@ function OrdersTab() {
           {ordersData?.items.map((order) => {
             const status = statusLabels[order.status] ?? { label: order.status, color: "var(--color-gold-muted)" };
             return (
-              <div key={order.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border" style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-smoke)" }}>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold" style={{ color: "var(--color-ivory)", fontFamily: "var(--font-sans)" }}>
-                    Pedido #{order.id} — {order.customerName ?? "Cliente"}
-                  </p>
-                  <p className="text-xs" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
-                    {new Date(order.createdAt).toLocaleDateString("pt-BR")} · {order.customerEmail}
-                  </p>
+              <div key={order.id} className="border" style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-smoke)" }}>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 cursor-pointer hover:bg-opacity-50" onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-ivory)", fontFamily: "var(--font-sans)" }}>
+                      Pedido #{order.id} — {order.customerName ?? "Cliente"}
+                    </p>
+                    <p className="text-xs" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                      {new Date(order.createdAt).toLocaleDateString("pt-BR")} · {order.customerEmail}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-serif text-base font-bold" style={{ color: "var(--color-gold)" }}>
+                      {Number(order.totalAmount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </span>
+
+                    <select
+                      value={order.status}
+                      onChange={(e) => { e.stopPropagation(); updateStatus.mutate({ id: order.id, status: e.target.value as any }); }}
+                      className="px-2 py-1 text-xs border outline-none"
+                      style={{ backgroundColor: "var(--color-graphite)", color: status.color, borderColor: "var(--color-smoke)", fontFamily: "var(--font-sans)" }}
+                    >
+                      {Object.entries(statusLabels).map(([val, { label }]) => (
+                        <option key={val} value={val}>{label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="font-serif text-base font-bold" style={{ color: "var(--color-gold)" }}>
-                    {Number(order.totalAmount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </span>
-
-                  <select
-                    value={order.status}
-                    onChange={(e) => updateStatus.mutate({ id: order.id, status: e.target.value as any })}
-                    className="px-2 py-1 text-xs border outline-none"
-                    style={{ backgroundColor: "var(--color-graphite)", color: status.color, borderColor: "var(--color-smoke)", fontFamily: "var(--font-sans)" }}
-                  >
-                    {Object.entries(statusLabels).map(([val, { label }]) => (
-                      <option key={val} value={val}>{label}</option>
-                    ))}
-                  </select>
-                </div>
+                {expandedOrder === order.id && (
+                  <div className="p-4 border-t" style={{ borderColor: "var(--color-smoke)", backgroundColor: "var(--color-graphite)" }}>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                          Data de Entrega Prevista
+                        </label>
+                        <input
+                          type="date"
+                          value={deliveryDates[order.id] || (order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toISOString().split('T')[0] : "")}
+                          onChange={(e) => setDeliveryDates({ ...deliveryDates, [order.id]: e.target.value })}
+                          className="w-full px-3 py-2 text-sm border outline-none"
+                          style={{ backgroundColor: "var(--color-charcoal)", color: "var(--color-ivory)", borderColor: "var(--color-smoke)", fontFamily: "var(--font-sans)" }}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            const dateValue = deliveryDates[order.id];
+                            if (dateValue) {
+                              updateDeliveryDate.mutate({
+                                id: order.id,
+                                estimatedDeliveryDate: new Date(dateValue),
+                              });
+                            }
+                          }}
+                          disabled={!deliveryDates[order.id] || updateDeliveryDate.isPending}
+                          className="flex-1 px-3 py-2 text-xs tracking-widest uppercase font-semibold disabled:opacity-50"
+                          style={{ backgroundColor: "var(--color-gold)", color: "var(--color-obsidian)", fontFamily: "var(--font-sans)" }}
+                        >
+                          {updateDeliveryDate.isPending ? "Salvando..." : "Salvar Data"}
+                        </button>
+                        <button
+                          onClick={() => setExpandedOrder(null)}
+                          className="px-3 py-2 text-xs border"
+                          style={{ color: "var(--color-gold)", borderColor: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
+                        >
+                          Fechar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
