@@ -31,8 +31,8 @@ export default function ProductCard({ product }: ProductCardProps) {
       toast.success("Produto adicionado ao carrinho", {
         style: {
           backgroundColor: "var(--color-charcoal)",
-          color: "var(--color-ivory)",
-          border: "1px solid var(--color-gold-muted)",
+          color: "var(--color-white-led)",
+          border: "1px solid var(--color-purple-muted)",
         },
       });
     },
@@ -61,8 +61,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/produto/${product.slug}`}
-      className="group relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1"
-      style={{ backgroundColor: "var(--color-charcoal)" }}
+      className="group relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 border"
+      style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-purple-muted)" }}
     >
       {/* Image container */}
       <div

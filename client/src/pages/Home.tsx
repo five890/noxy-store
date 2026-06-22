@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import StoreLayout from "@/components/StoreLayout";
 import ProductCard from "@/components/ProductCard";
-import { ArrowRight, Star, Shield, Truck } from "lucide-react";
+import { ArrowRight, Star, Shield, Truck, CheckCircle2 } from "lucide-react";
 
 export default function Home() {
   const { data: featuredCategories } = trpc.categories.featured.useQuery();
@@ -41,10 +41,10 @@ export default function Home() {
 
         {/* Radial glow */}
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-30"
           style={{
             background:
-              "radial-gradient(ellipse 80% 60% at 50% 50%, oklch(74% 0.14 82 / 0.4), transparent)",
+              "radial-gradient(ellipse 80% 60% at 50% 50%, oklch(65% 0.20 280 / 0.5), transparent)",
           }}
         />
 
@@ -54,46 +54,50 @@ export default function Home() {
             <div
               className="h-px flex-1 max-w-24"
               style={{
-                background:
-                  "linear-gradient(90deg, transparent, var(--color-gold))",
+                  background:
+                  "linear-gradient(90deg, transparent, var(--color-purple))",
               }}
             />
             <span
-              className="text-xs tracking-[0.5em] uppercase"
-              style={{ color: "var(--color-gold)", fontFamily: "var(--font-sans)" }}
+                className="text-xs tracking-[0.5em] uppercase"
+              style={{ color: "var(--color-purple)", fontFamily: "var(--font-sans)" }}
             >
-              Coleção Exclusiva
+              Coleção Premium
             </span>
             <div
               className="h-px flex-1 max-w-24"
               style={{
                 background:
-                  "linear-gradient(90deg, var(--color-gold), transparent)",
+                  "linear-gradient(90deg, var(--color-purple), transparent)",
               }}
             />
           </div>
 
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <h1
+              className="font-serif text-6xl md:text-8xl lg:text-9xl font-black leading-none"
+              style={{ color: "var(--color-white-led)", textShadow: "0 0 20px oklch(65% 0.20 280 / 0.6)" }}
+            >
+              NOXY
+            </h1>
+            <CheckCircle2
+              size={80}
+              style={{ color: "var(--color-purple)", fill: "var(--color-purple)" }}
+              className="animate-pulse"
+            />
+          </div>
           <h1
-            className="font-serif text-6xl md:text-8xl lg:text-9xl font-black mb-6 leading-none"
-            style={{ color: "var(--color-ivory)" }}
+            className="font-serif text-5xl md:text-6xl font-black mb-6 leading-none"
+            style={{ color: "var(--color-purple-light)" }}
           >
-            MAISON
-            <br />
-            <span className="text-gold-gradient" style={{
-              background: "linear-gradient(135deg, var(--color-gold-light) 0%, var(--color-gold) 40%, var(--color-gold-dark) 70%, var(--color-gold) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              DORÉE
-            </span>
+            STORE
           </h1>
 
           <p
             className="font-display text-xl md:text-2xl italic mb-4"
-            style={{ color: "var(--color-parchment)", fontFamily: "var(--font-display)" }}
+            style={{ color: "var(--color-white-bright)", fontFamily: "var(--font-display)" }}
           >
-            Onde o luxo encontra a arte
+            Estilo que inspira, qualidade que perdura
           </p>
 
           <p

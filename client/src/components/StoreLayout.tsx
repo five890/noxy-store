@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { ShoppingBag, User, Menu, X, Crown } from "lucide-react";
+import { ShoppingBag, User, Menu, X, Crown, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 
@@ -36,7 +36,7 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Top bar */}
       <div className="bg-primary text-primary-foreground text-center py-2 text-xs font-sans tracking-widest uppercase">
-        Frete grátis em compras acima de R$ 299 &nbsp;·&nbsp; Entrega em todo o Brasil
+        🎬 Bem-vindo à NOXY STORE &nbsp;·&nbsp; Entrega em todo o Brasil
       </div>
 
       {/* Navbar */}
@@ -53,27 +53,23 @@ export default function StoreLayout({ children }: StoreLayoutProps) {
             {/* Logo */}
             <Link href="/" className="flex flex-col items-center gap-0 group">
               <div className="flex items-center gap-2">
-                <Crown
-                  size={18}
-                  className="text-gold-gradient"
-                  style={{ color: "var(--color-gold)" }}
-                />
                 <span
                   className="font-serif text-2xl font-bold tracking-widest"
-                  style={{ color: "var(--color-gold)", fontFamily: "var(--font-serif)" }}
+                  style={{ color: "var(--color-white-led)", fontFamily: "var(--font-serif)", textShadow: "0 0 10px oklch(65% 0.20 280 / 0.5)" }}
                 >
-                  MAISON DORÉE
+                  NOXY STORE
                 </span>
-                <Crown
-                  size={18}
-                  style={{ color: "var(--color-gold)" }}
+                <CheckCircle2
+                  size={20}
+                  style={{ color: "var(--color-purple)", fill: "var(--color-purple)" }}
+                  className="animate-pulse"
                 />
               </div>
               <span
                 className="text-xs tracking-[0.4em] uppercase"
-                style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)", fontSize: "0.6rem" }}
+                style={{ color: "var(--color-purple-muted)", fontFamily: "var(--font-sans)", fontSize: "0.6rem" }}
               >
-                Luxo &amp; Elegância
+                Estilo &amp; Qualidade
               </span>
             </Link>
 
