@@ -22,6 +22,15 @@
   --color-white-bright: oklch(96% 0.01 0);
   --color-white-soft: oklch(92% 0.01 0);
 
+  /* Aliases para compatibilidade com Admin.tsx (antigas cores Art Deco) */
+  --color-ivory: oklch(96% 0.01 0);
+  --color-cream: oklch(93% 0.015 88);
+  --color-parchment: oklch(88% 0.02 85);
+  --color-gold: oklch(65% 0.20 280);
+  --color-gold-light: oklch(75% 0.18 280);
+  --color-gold-dark: oklch(45% 0.18 280);
+  --color-gold-muted: oklch(35% 0.12 280);
+
   /* Semantic */
   --color-background: oklch(5% 0 0);
   --color-foreground: oklch(98% 0.01 0);
