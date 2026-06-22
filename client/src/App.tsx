@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import OrderConfirmed from "./pages/OrderConfirmed";
 import MyAccount from "./pages/MyAccount";
 import Admin from "./pages/Admin";
+import UploadPaymentProof from "./pages/UploadPaymentProof";
 
 function Router() {
   return (
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/pedido-confirmado/:id" component={OrderConfirmed} />
       <Route path="/minha-conta" component={MyAccount} />
       <Route path="/admin" component={Admin} />
+      <Route path="/pedido/:orderId/comprovante" component={UploadPaymentProof} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

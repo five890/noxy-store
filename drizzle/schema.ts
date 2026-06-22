@@ -126,3 +126,21 @@ export const orderItems = mysqlTable("order_items", {
 
 export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = typeof orderItems.$inferInsert;
+
+// ─── Payment Proofs ───────────────────────────────────────────────────────────
+export const paymentProofs = mysqlTable("payment_proofs", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull(),
+  userId: int("userId").notNull(),
+  proofUrl: text("proofUrl").notNull(),
+  proofType: varchar("proofType", { length: 50 }).notNull(), // 'image', 'pdf'
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  adminNotes: text("adminNotes"),
+  reviewedBy: int("reviewedBy"), // admin user id
+  reviewedAt: timestamp("reviewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PaymentProof = typeof paymentProofs.$inferSelect;
+export type InsertPaymentProof = typeof paymentProofs.$inferInsert;

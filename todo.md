@@ -40,3 +40,16 @@
 ## Testes
 - [x] Testes vitest para routers principais (14 testes passando)
 - [x] Checkpoint final
+
+
+## Fluxo de Comprovante de Pagamento (Nova Feature)
+- [x] Criar tabela `payment_proofs` no banco de dados
+- [x] Migração SQL para a nova tabela
+- [x] Router: upload de comprovante com armazenamento em S3
+- [x] Router: listar comprovantes (admin)
+- [x] Router: aprovar/rejeitar comprovante (admin)
+- [x] Página: upload de comprovante para cliente (pós-pagamento)
+- [x] Página admin: análise de comprovantes com aprovação/rejeição
+- [x] Aba de comprovantes integrada no painel admin
+- [x] Upload real de comprovantes para S3 (storagePut)
+- [x] TypeScript compilando sem erros
