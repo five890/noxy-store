@@ -35,8 +35,26 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
+  // Configurar trust proxy para rate limiting funcionar corretamente
+  app.set('trust proxy', 1);
+  
+  // Permitir CORS
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+    } else {
+      next();
+    }
+  });
+
   // Seguranca: Helmet para headers HTTP seguros
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  }));
 
   // Rate limiting global
   const globalLimiter = rateLimit({
@@ -45,6 +63,7 @@ async function startServer() {
     message: "Muitas requisicoes, tente novamente mais tarde",
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => req.path === '/health',
   });
   app.use(globalLimiter);
 
