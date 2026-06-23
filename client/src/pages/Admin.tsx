@@ -439,11 +439,11 @@ function PaymentProofsTab() {
     onSuccess: () => toast.success("Comprovante rejeitado!"),
   });
 
-  const proofs = Array.isArray(proofsData) ? proofsData : [];
+  const proofs = proofsData?.items || [];
 
   return (
     <div className="space-y-4">
-      {proofs.length === 0 ? (
+      {!proofsData || proofs.length === 0 ? (
         <p style={{ color: "var(--color-white-soft)" }}>Nenhum comprovante pendente</p>
       ) : (
         proofs.map((proof: any) => (
