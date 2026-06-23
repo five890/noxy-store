@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { handleStripeWebhook } from "../routers/payments";
@@ -32,6 +34,29 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+
+  // Seguranca: Helmet para headers HTTP seguros
+  app.use(helmet());
+
+  // Rate limiting global
+  const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: "Muitas requisicoes, tente novamente mais tarde",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  app.use(globalLimiter);
+
+  // Rate limiting mais restritivo para login/auth
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    skipSuccessfulRequests: true,
+    message: "Muitas tentativas de login, tente novamente mais tarde",
+  });
+  app.use("/api/oauth", authLimiter);
+
   // Configure body parser with larger size limit for file uploads
   // Stripe webhook must receive raw body BEFORE express.json()
   app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), handleStripeWebhook);

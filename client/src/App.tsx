@@ -13,7 +13,9 @@ import OrderConfirmed from "./pages/OrderConfirmed";
 import MyAccount from "./pages/MyAccount";
 import Admin from "./pages/Admin";
 import UploadPaymentProof from "./pages/UploadPaymentProof";
+import ProofSuccess from "./pages/ProofSuccess";
 import PixPayment from "./pages/PixPayment";
+import AdminLogin from "./pages/AdminLogin";
 
 function Router() {
   return (
@@ -28,6 +30,9 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/pedido/:orderId/pix" component={PixPayment} />
       <Route path="/pedido/:orderId/comprovante" component={UploadPaymentProof} />
+      <Route path="/pedido/:orderId/comprovante-enviado" component={ProofSuccess} />
+      <Route path="/meus-pedidos" component={MyAccount} />
+      <Route path="/admin-login" component={AdminLogin} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

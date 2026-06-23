@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import StoreLayout from "@/components/StoreLayout";
 import ProductCard from "@/components/ProductCard";
-import { ArrowRight, Star, Shield, Truck, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Star, Shield, Truck, CheckCircle2, Sparkles } from "lucide-react";
 
 export default function Home() {
   const { data: featuredCategories } = trpc.categories.featured.useQuery();
@@ -11,272 +11,188 @@ export default function Home() {
 
   return (
     <StoreLayout>
-      {/* ── Hero Banner ──────────────────────────────────────────────────── */}
+      {/* ── Hero Banner ────────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
-        style={{ backgroundColor: "var(--color-obsidian)" }}
+        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
+        style={{
+          background: "linear-gradient(135deg, var(--color-background) 0%, oklch(15% 0.15 280) 50%, var(--color-background) 100%)",
+        }}
       >
-        {/* Background geometric pattern */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(
-                45deg,
-                var(--color-gold) 0px,
-                var(--color-gold) 1px,
-                transparent 1px,
-                transparent 60px
-              ),
-              repeating-linear-gradient(
-                -45deg,
-                var(--color-gold) 0px,
-                var(--color-gold) 1px,
-                transparent 1px,
-                transparent 60px
-              )
-            `,
-          }}
-        />
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          {/* Glow orbs */}
+          <div
+            className="absolute top-20 left-10 w-96 h-96 rounded-full opacity-20 blur-3xl"
+            style={{
+              background: "radial-gradient(circle, oklch(65% 0.25 280), transparent)",
+              animation: "pulse 8s ease-in-out infinite",
+            }}
+          />
+          <div
+            className="absolute bottom-20 right-10 w-80 h-80 rounded-full opacity-15 blur-3xl"
+            style={{
+              background: "radial-gradient(circle, oklch(60% 0.20 280), transparent)",
+              animation: "pulse 10s ease-in-out infinite 2s",
+            }}
+          />
 
-        {/* Radial glow */}
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% 50%, oklch(65% 0.20 280 / 0.5), transparent)",
-          }}
-        />
+          {/* Grid pattern */}
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: `
+                linear-gradient(0deg, transparent 24%, oklch(65% 0.20 280 / 0.5) 25%, oklch(65% 0.20 280 / 0.5) 26%, transparent 27%, transparent 74%, oklch(65% 0.20 280 / 0.5) 75%, oklch(65% 0.20 280 / 0.5) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, oklch(65% 0.20 280 / 0.5) 25%, oklch(65% 0.20 280 / 0.5) 26%, transparent 27%, transparent 74%, oklch(65% 0.20 280 / 0.5) 75%, oklch(65% 0.20 280 / 0.5) 76%, transparent 77%, transparent)
+              `,
+              backgroundSize: "50px 50px",
+            }}
+          />
+        </div>
 
-        <div className="container relative z-10 text-center">
-          {/* Ornamental lines */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div
-              className="h-px flex-1 max-w-24"
-              style={{
-                  background:
-                  "linear-gradient(90deg, transparent, var(--color-purple))",
-              }}
-            />
+        {/* Content */}
+        <div className="container relative z-10 text-center px-4">
+          {/* Top accent */}
+          <div className="flex items-center justify-center gap-3 mb-8 animate-fade-in">
+            <Sparkles size={20} style={{ color: "var(--color-purple)" }} />
             <span
-                className="text-xs tracking-[0.5em] uppercase"
-              style={{ color: "var(--color-purple)", fontFamily: "var(--font-sans)" }}
+              className="text-sm tracking-widest uppercase font-semibold"
+              style={{ color: "var(--color-purple)" }}
             >
-              Coleção Premium
+              Bem-vindo à Noxy Store
             </span>
-            <div
-              className="h-px flex-1 max-w-24"
-              style={{
-                background:
-                  "linear-gradient(90deg, var(--color-purple), transparent)",
-              }}
-            />
+            <Sparkles size={20} style={{ color: "var(--color-purple)" }} />
           </div>
 
-          <div className="flex items-center justify-center gap-3 mb-6">
+          {/* Main heading */}
+          <div className="mb-8">
             <h1
-              className="font-serif text-6xl md:text-8xl lg:text-9xl font-black leading-none"
-              style={{ color: "var(--color-white-led)", textShadow: "0 0 20px oklch(65% 0.20 280 / 0.6)" }}
+              className="font-serif text-7xl md:text-8xl lg:text-9xl font-black leading-tight mb-4"
+              style={{
+                color: "var(--color-white-led)",
+                textShadow: "0 0 40px oklch(65% 0.25 280 / 0.8), 0 0 80px oklch(65% 0.15 280 / 0.4)",
+                letterSpacing: "-0.02em",
+              }}
             >
               NOXY
             </h1>
-            <CheckCircle2
-              size={80}
-              style={{ color: "var(--color-purple)", fill: "var(--color-purple)" }}
-              className="animate-pulse"
-            />
+            <div
+              className="text-5xl md:text-6xl lg:text-7xl font-serif font-black"
+              style={{
+                background: "linear-gradient(135deg, var(--color-purple) 0%, var(--color-white-led) 50%, var(--color-purple) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                textShadow: "0 0 30px oklch(65% 0.20 280 / 0.5)",
+              }}
+            >
+              STORE
+            </div>
           </div>
-          <h1
-            className="font-serif text-5xl md:text-6xl font-black mb-6 leading-none"
-            style={{ color: "var(--color-purple-light)" }}
-          >
-            STORE
-          </h1>
 
+          {/* Subtitle */}
           <p
-            className="font-display text-xl md:text-2xl italic mb-4"
-            style={{ color: "var(--color-white-bright)", fontFamily: "var(--font-display)" }}
+            className="text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed"
+            style={{ color: "var(--color-white-soft)", fontStyle: "italic" }}
           >
-            Estilo que inspira, qualidade que perdura
-          </p>
-
-          <p
-            className="text-sm tracking-widest uppercase mb-12 max-w-md mx-auto"
-            style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
-          >
-            Curadoria refinada de produtos de alto padrão para quem aprecia o extraordinário
+            Experiência de compra elevada. Produtos selecionados. Entrega em todo o Brasil.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/catalogo"
-              className="inline-flex items-center gap-3 px-8 py-4 text-xs tracking-widest uppercase font-semibold transition-all duration-300 hover:scale-105"
-              style={{
-                backgroundColor: "var(--color-gold)",
-                color: "var(--color-obsidian)",
-                fontFamily: "var(--font-sans)",
-                boxShadow: "var(--shadow-gold)",
-              }}
-            >
-              Explorar Catálogo
-              <ArrowRight size={16} />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <Link href="/catalogo">
+              <button
+                className="px-8 py-4 text-sm tracking-widest uppercase font-bold transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: "var(--color-purple)",
+                  color: "var(--color-white-led)",
+                  boxShadow: "0 0 20px oklch(65% 0.25 280 / 0.4)",
+                }}
+              >
+                Explorar Catálogo
+                <ArrowRight size={18} />
+              </button>
             </Link>
-            <Link
-              href="/catalogo?onSale=true"
-              className="inline-flex items-center gap-3 px-8 py-4 text-xs tracking-widest uppercase font-semibold border transition-all duration-300 hover:bg-gold/10"
-              style={{
-                color: "var(--color-gold)",
-                borderColor: "var(--color-gold)",
-                fontFamily: "var(--font-sans)",
-              }}
-            >
-              Ver Promoções
+            <Link href="/catalogo?onSale=true">
+              <button
+                className="px-8 py-4 text-sm tracking-widest uppercase font-bold transition-all duration-300 hover:scale-105"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "var(--color-purple)",
+                  border: "2px solid var(--color-purple)",
+                }}
+              >
+                Ver Promoções
+              </button>
             </Link>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+          {/* Trust badges */}
+          <div className="flex flex-wrap justify-center gap-8 text-sm" style={{ color: "var(--color-white-soft)" }}>
+            <div className="flex items-center gap-2">
+              <Shield size={18} style={{ color: "var(--color-purple)" }} />
+              <span>100% Seguro</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Truck size={18} style={{ color: "var(--color-purple)" }} />
+              <span>Entrega Rápida</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={18} style={{ color: "var(--color-purple)" }} />
+              <span>Garantia</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div
+            className="w-6 h-10 border-2 rounded-full flex items-start justify-center p-2"
+            style={{ borderColor: "var(--color-purple)" }}
+          >
             <div
-              className="w-px h-12"
-              style={{
-                background: "linear-gradient(180deg, var(--color-gold), transparent)",
-              }}
+              className="w-1 h-2 rounded-full animate-pulse"
+              style={{ backgroundColor: "var(--color-purple)" }}
             />
           </div>
         </div>
       </section>
 
-      {/* ── Features Bar ─────────────────────────────────────────────────── */}
-      <section
-        className="border-y py-6"
-        style={{
-          backgroundColor: "var(--color-charcoal)",
-          borderColor: "var(--color-gold-muted)",
-        }}
-      >
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <Truck size={20} />,
-                title: "Frete Grátis",
-                desc: "Em compras acima de R$ 299",
-              },
-              {
-                icon: <Shield size={20} />,
-                title: "Compra Segura",
-                desc: "Pagamentos criptografados",
-              },
-              {
-                icon: <Star size={20} />,
-                title: "Qualidade Premium",
-                desc: "Produtos selecionados",
-              },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-4 justify-center md:justify-start">
-                <div style={{ color: "var(--color-gold)" }}>{item.icon}</div>
-                <div>
-                  <p
-                    className="text-xs tracking-widest uppercase font-semibold"
-                    style={{ color: "var(--color-ivory)", fontFamily: "var(--font-sans)" }}
-                  >
-                    {item.title}
-                  </p>
-                  <p
-                    className="text-xs mt-0.5"
-                    style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Featured Categories ───────────────────────────────────────────── */}
-      {featuredCategories && featuredCategories.length > 0 && (
-        <section className="py-20" style={{ backgroundColor: "var(--color-obsidian)" }}>
+      {/* ── Featured Categories ────────────────────────────────────────────── */}
+      {featuredCategories && Array.isArray(featuredCategories) && featuredCategories.length > 0 && (
+        <section className="py-20" style={{ backgroundColor: "var(--color-background)" }}>
           <div className="container">
-            {/* Section header */}
-            <div className="text-center mb-12">
-              <div className="deco-divider mb-6">
-                <span style={{ color: "var(--color-gold)" }}>◆</span>
-              </div>
-              <h2
-                className="font-serif text-4xl md:text-5xl font-bold mb-3"
-                style={{ color: "var(--color-ivory)" }}
-              >
-                Categorias em Destaque
-              </h2>
+            <div className="text-center mb-16">
               <p
-                className="text-sm tracking-widest uppercase"
-                style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
+                className="text-sm tracking-widest uppercase mb-4"
+                style={{ color: "var(--color-purple)" }}
               >
-                Explore nossa curadoria exclusiva
+                Categorias
               </p>
+              <h2
+                className="font-serif text-5xl md:text-6xl font-black"
+                style={{ color: "var(--color-white-led)" }}
+              >
+                Coleções em Destaque
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuredCategories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/catalogo?categoria=${cat.slug}`}
-                  className="group relative overflow-hidden aspect-[4/3] flex items-end p-6 transition-all duration-500"
-                  style={{ backgroundColor: "var(--color-charcoal)" }}
-                >
-                  {/* Background image */}
-                  {cat.imageUrl && (
-                    <img
-                      src={cat.imageUrl}
-                      alt={cat.name}
-                      className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500"
-                    />
-                  )}
-
-                  {/* Overlay gradient */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredCategories.map((category: any) => (
+                <Link key={category.id} href={`/catalogo?category=${category.id}`}>
                   <div
-                    className="absolute inset-0"
+                    className="p-8 rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
                     style={{
-                      background:
-                        "linear-gradient(to top, oklch(8% 0 0 / 0.9) 0%, transparent 60%)",
+                      backgroundColor: "var(--color-charcoal)",
+                      borderLeft: "4px solid var(--color-purple)",
                     }}
-                  />
-
-                  {/* Corner ornaments */}
-                  <div
-                    className="absolute top-4 left-4 w-8 h-8 border-t border-l opacity-60 group-hover:opacity-100 transition-opacity"
-                    style={{ borderColor: "var(--color-gold)" }}
-                  />
-                  <div
-                    className="absolute bottom-4 right-4 w-8 h-8 border-b border-r opacity-60 group-hover:opacity-100 transition-opacity"
-                    style={{ borderColor: "var(--color-gold)" }}
-                  />
-
-                  {/* Content */}
-                  <div className="relative z-10">
+                  >
                     <h3
-                      className="font-serif text-2xl font-bold mb-1 group-hover:text-gold transition-colors"
-                      style={{ color: "var(--color-ivory)" }}
+                      className="font-serif text-2xl font-bold mb-2"
+                      style={{ color: "var(--color-white-led)" }}
                     >
-                      {cat.name}
+                      {category.name}
                     </h3>
-                    {cat.description && (
-                      <p
-                        className="text-xs tracking-wide"
-                        style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
-                      >
-                        {cat.description}
-                      </p>
-                    )}
-                    <div
-                      className="flex items-center gap-2 mt-3 text-xs tracking-widest uppercase font-semibold"
-                      style={{ color: "var(--color-gold)", fontFamily: "var(--font-sans)" }}
-                    >
-                      Explorar <ArrowRight size={12} />
-                    </div>
+                    <p style={{ color: "var(--color-white-soft)" }}>Explorar</p>
                   </div>
                 </Link>
               ))}
@@ -285,136 +201,94 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Featured Products ─────────────────────────────────────────────── */}
-      {featuredProducts && featuredProducts.items.length > 0 && (
-        <section
-          className="py-20 border-t"
-          style={{
-            backgroundColor: "var(--color-charcoal)",
-            borderColor: "var(--color-gold-muted)",
-          }}
-        >
+      {/* ── Featured Products ──────────────────────────────────────────────── */}
+      {featuredProducts && Array.isArray(featuredProducts) && featuredProducts.length > 0 && (
+        <section className="py-20" style={{ backgroundColor: "var(--color-obsidian)" }}>
           <div className="container">
-            <div className="text-center mb-12">
-              <div className="deco-divider mb-6">
-                <span style={{ color: "var(--color-gold)" }}>◆</span>
-              </div>
-              <h2
-                className="font-serif text-4xl md:text-5xl font-bold mb-3"
-                style={{ color: "var(--color-ivory)" }}
-              >
-                Destaques da Coleção
-              </h2>
+            <div className="text-center mb-16">
               <p
-                className="text-sm tracking-widest uppercase"
-                style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
+                className="text-sm tracking-widest uppercase mb-4"
+                style={{ color: "var(--color-purple)" }}
               >
-                Peças selecionadas para você
+                Seleção Especial
               </p>
+              <h2
+                className="font-serif text-5xl md:text-6xl font-black"
+                style={{ color: "var(--color-white-led)" }}
+              >
+                Produtos em Destaque
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {featuredProducts.items.map((product) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
-            </div>
-
-            <div className="text-center mt-10">
-              <Link
-                href="/catalogo"
-                className="inline-flex items-center gap-3 px-8 py-3 border text-xs tracking-widest uppercase font-semibold transition-all duration-300 hover:bg-gold/10"
-                style={{
-                  color: "var(--color-gold)",
-                  borderColor: "var(--color-gold)",
-                  fontFamily: "var(--font-sans)",
-                }}
-              >
-                Ver Toda a Coleção <ArrowRight size={14} />
-              </Link>
             </div>
           </div>
         </section>
       )}
 
-      {/* ── Sale Products ─────────────────────────────────────────────────── */}
-      {saleProducts && saleProducts.items.length > 0 && (
-        <section className="py-20" style={{ backgroundColor: "var(--color-obsidian)" }}>
+      {/* ── Sale Products ──────────────────────────────────────────────────── */}
+      {saleProducts && Array.isArray(saleProducts) && saleProducts.length > 0 && (
+        <section className="py-20" style={{ backgroundColor: "var(--color-background)" }}>
           <div className="container">
-            <div className="text-center mb-12">
-              <div className="deco-divider mb-6">
-                <span style={{ color: "var(--color-gold)" }}>◆</span>
+            <div className="text-center mb-16">
+              <div
+                className="inline-block px-4 py-2 rounded-full mb-4"
+                style={{ backgroundColor: "var(--color-charcoal)" }}
+              >
+                <p
+                  className="text-sm tracking-widest uppercase font-bold"
+                  style={{ color: "var(--color-purple)" }}
+                >
+                  ⚡ Promoção
+                </p>
               </div>
               <h2
-                className="font-serif text-4xl md:text-5xl font-bold mb-3"
-                style={{ color: "var(--color-ivory)" }}
+                className="font-serif text-5xl md:text-6xl font-black"
+                style={{ color: "var(--color-white-led)" }}
               >
                 Ofertas Especiais
               </h2>
-              <p
-                className="text-sm tracking-widest uppercase"
-                style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
-              >
-                Oportunidades únicas por tempo limitado
-              </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {saleProducts.items.map((product) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {saleProducts.map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
-            <div className="text-center mt-10">
-              <Link
-                href="/catalogo?onSale=true"
-                className="inline-flex items-center gap-3 px-8 py-3 text-xs tracking-widest uppercase font-semibold transition-all duration-300 hover:scale-105"
-                style={{
-                  backgroundColor: "var(--color-gold)",
-                  color: "var(--color-obsidian)",
-                  fontFamily: "var(--font-sans)",
-                  boxShadow: "var(--shadow-gold)",
-                }}
-              >
-                Ver Todas as Promoções <ArrowRight size={14} />
+            <div className="text-center mt-12">
+              <Link href="/catalogo?onSale=true">
+                <button
+                  className="px-8 py-3 text-sm tracking-widest uppercase font-bold transition-all duration-300 hover:scale-105"
+                  style={{
+                    backgroundColor: "var(--color-purple)",
+                    color: "var(--color-white-led)",
+                  }}
+                >
+                  Ver Todas as Promoções
+                </button>
               </Link>
             </div>
           </div>
         </section>
       )}
 
-      {/* ── Empty State (no products yet) ────────────────────────────────── */}
-      {(!saleProducts?.items.length && !featuredProducts?.items.length && !featuredCategories?.length) && (
-        <section className="py-32 text-center" style={{ backgroundColor: "var(--color-obsidian)" }}>
-          <div className="container">
-            <div className="deco-divider mb-8">
-              <span style={{ color: "var(--color-gold)" }}>◆</span>
-            </div>
-            <h2
-              className="font-serif text-3xl font-bold mb-4"
-              style={{ color: "var(--color-ivory)" }}
-            >
-              Loja em Preparação
-            </h2>
-            <p
-              className="text-sm tracking-wide mb-8"
-              style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}
-            >
-              Nossa coleção exclusiva estará disponível em breve. Acesse o painel administrativo para adicionar produtos.
-            </p>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-3 px-8 py-3 border text-xs tracking-widest uppercase font-semibold"
-              style={{
-                color: "var(--color-gold)",
-                borderColor: "var(--color-gold)",
-                fontFamily: "var(--font-sans)",
-              }}
-            >
-              Painel Admin <ArrowRight size={14} />
-            </Link>
-          </div>
-        </section>
-      )}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 0.4; }
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.8s ease-out;
+        }
+      `}</style>
     </StoreLayout>
   );
 }

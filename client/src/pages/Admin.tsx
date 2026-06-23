@@ -11,14 +11,21 @@ import { useLocation } from "wouter";
 import { Upload, Plus, CheckCircle, XCircle } from "lucide-react";
 
 export default function Admin() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  if (!user || user.role !== "admin") {
+  // Redirecionar se nao for admin
+  if (!loading && (!user || user.role !== "admin")) {
+    navigate("/");
+    return null;
+  }
+
+  // Loading state
+  if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-background)" }}>
-        <p style={{ color: "var(--color-white-soft)" }}>Acesso negado. Apenas administradores podem acessar esta página.</p>
+        <p style={{ color: "var(--color-white-soft)" }}>Carregando...</p>
       </div>
     );
   }

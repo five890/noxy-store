@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import StoreLayout from "@/components/StoreLayout";
@@ -24,11 +24,11 @@ export default function UploadPaymentProof() {
     { enabled: isAuthenticated && !!orderId }
   );
 
+  const [, navigate] = useLocation();
+
   const uploadProof = trpc.paymentProofs.upload.useMutation({
     onSuccess: () => {
-      toast.success("Comprovante enviado com sucesso! Aguarde análise do administrador.");
-      setFile(null);
-      setPreview("");
+      navigate(`/pedido/${orderId}/comprovante-enviado`);
     },
     onError: (err) => {
       toast.error(err.message || "Erro ao enviar comprovante");
