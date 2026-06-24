@@ -15,9 +15,15 @@ export default function Admin() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
 
+  // Verificar se é admin local (localStorage) ou admin do Manus
+  const adminSession = typeof window !== 'undefined' ? localStorage.getItem("admin_session") : null;
+  const isLocalAdmin = adminSession !== null;
+  const isRemoteAdmin = !loading && user && user.role === "admin";
+  const isAdmin = isLocalAdmin || isRemoteAdmin;
+
   // Redirecionar se nao for admin
-  if (!loading && (!user || user.role !== "admin")) {
-    navigate("/");
+  if (!loading && !isAdmin) {
+    navigate("/admin-login");
     return null;
   }
 
