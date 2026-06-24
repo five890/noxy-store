@@ -27,8 +27,8 @@ export default function Admin() {
     return null;
   }
 
-  // Loading state
-  if (loading || !user) {
+  // Loading state - só mostrar se for admin remoto e ainda está carregando
+  if (!isLocalAdmin && (loading || !user)) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-background)" }}>
         <p style={{ color: "var(--color-white-soft)" }}>Carregando...</p>
