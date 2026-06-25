@@ -101,7 +101,17 @@ export async function getCategoryBySlug(slug: string) {
 export async function createCategory(data: InsertCategory) {
   const db = await getDb();
   if (!db) throw new Error("DB not available");
-  const [result] = await db.insert(categories).values(data);
+  
+  // Garantir valores padrão explícitos para evitar erros de 'DEFAULT' no MySQL
+  const values: InsertCategory = {
+    ...data,
+    featured: data.featured ?? false,
+    sortOrder: data.sortOrder ?? 0,
+    createdAt: data.createdAt ?? new Date(),
+    updatedAt: data.updatedAt ?? new Date(),
+  };
+  
+  const [result] = await db.insert(categories).values(values);
   return result;
 }
 
@@ -191,7 +201,20 @@ export async function getProductImages(productId: number) {
 export async function createProduct(data: InsertProduct) {
   const db = await getDb();
   if (!db) throw new Error("DB not available");
-  const [result] = await db.insert(products).values(data);
+  
+  // Garantir valores padrão explícitos para evitar erros de 'DEFAULT' no MySQL
+  const values: InsertProduct = {
+    ...data,
+    stock: data.stock ?? 0,
+    featured: data.featured ?? false,
+    onSale: data.onSale ?? false,
+    active: data.active ?? true,
+    tags: data.tags ?? [],
+    createdAt: data.createdAt ?? new Date(),
+    updatedAt: data.updatedAt ?? new Date(),
+  };
+  
+  const [result] = await db.insert(products).values(values);
   return result;
 }
 
