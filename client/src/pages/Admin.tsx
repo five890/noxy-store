@@ -319,10 +319,16 @@ function ProductsTab() {
 function CategoriesTab() {
   const [name, setName] = useState("");
   const { data: categories } = trpc.categories.list.useQuery();
+  const utils = trpc.useUtils();
   const createCategory = trpc.categories.create.useMutation({
     onSuccess: () => {
       toast.success("Categoria criada!");
       setName("");
+      utils.categories.list.invalidate();
+    },
+    onError: (err: any) => {
+      console.error("[CategoriesTab] Erro ao criar categoria:", err);
+      toast.error(err.message || "Erro ao criar categoria");
     },
   });
 

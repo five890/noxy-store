@@ -37,10 +37,11 @@ export const adminOrLocalProcedure = t.procedure.use(({ ctx, next }) => {
   
   // Verificar se é admin local (header)
   // Headers HTTP são sempre lowercase
-  const adminToken = ctx.req.headers["x-admin-token"] || ctx.req.get?.("x-admin-token");
+  const adminToken = (ctx.req.headers["x-admin-token"] as string) || ctx.req.get?.("x-admin-token");
   if (adminToken === "local-admin") {
     return next({ ctx });
   }
   
+  console.error("[adminOrLocalProcedure] Acesso negado. User:", ctx.user?.role, "Token:", adminToken);
   throw new TRPCError({ code: "FORBIDDEN", message: "Acesso restrito a administradores" });
 });
