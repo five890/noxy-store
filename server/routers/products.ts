@@ -11,7 +11,7 @@ import {
   getProducts,
   updateProduct,
 } from "../db";
-import { adminProcedure, publicProcedure, router } from "../_core/trpc";
+import { adminProcedure, adminOrLocalProcedure, publicProcedure, router } from "../_core/trpc";
 
 export const productsRouter = router({
   list: publicProcedure
@@ -47,7 +47,7 @@ export const productsRouter = router({
       return { ...product, images };
     }),
 
-  create: adminProcedure
+  create: adminOrLocalProcedure
     .input(
       z.object({
         categoryId: z.number(),
@@ -69,7 +69,7 @@ export const productsRouter = router({
       return { success: true };
     }),
 
-  update: adminProcedure
+  update: adminOrLocalProcedure
     .input(
       z.object({
         id: z.number(),
@@ -93,14 +93,14 @@ export const productsRouter = router({
       return { success: true };
     }),
 
-  delete: adminProcedure
+  delete: adminOrLocalProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       await deleteProduct(input.id);
       return { success: true };
     }),
 
-  addImage: adminProcedure
+  addImage: adminOrLocalProcedure
     .input(
       z.object({
         productId: z.number(),
@@ -114,7 +114,7 @@ export const productsRouter = router({
       return { success: true };
     }),
 
-  deleteImage: adminProcedure
+  deleteImage: adminOrLocalProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       await deleteProductImage(input.id);

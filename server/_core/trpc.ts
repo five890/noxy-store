@@ -27,3 +27,19 @@ export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   }
   return next({ ctx });
 });
+
+// Admin procedure que aceita admin local (localStorage) ou admin remoto (Manus)
+export const adminOrLocalProcedure = t.procedure.use(({ ctx, next }) => {
+  // Verificar se é admin remoto (Manus)
+  if (ctx.user && ctx.user.role === "admin") {
+    return next({ ctx });
+  }
+  
+  // Verificar se é admin local (header)
+  const adminToken = ctx.req.headers["x-admin-token"];
+  if (adminToken === "local-admin") {
+    return next({ ctx });
+  }
+  
+  throw new TRPCError({ code: "FORBIDDEN", message: "Acesso restrito a administradores" });
+});

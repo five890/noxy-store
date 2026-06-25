@@ -8,7 +8,7 @@ import {
   getFeaturedCategories,
   updateCategory,
 } from "../db";
-import { adminProcedure, publicProcedure, router } from "../_core/trpc";
+import { adminProcedure, adminOrLocalProcedure, publicProcedure, router } from "../_core/trpc";
 
 export const categoriesRouter = router({
   list: publicProcedure.query(() => getAllCategories()),
@@ -23,7 +23,7 @@ export const categoriesRouter = router({
       return cat;
     }),
 
-  create: adminProcedure
+  create: adminOrLocalProcedure
     .input(
       z.object({
         name: z.string().min(1),
@@ -39,7 +39,7 @@ export const categoriesRouter = router({
       return { success: true };
     }),
 
-  update: adminProcedure
+  update: adminOrLocalProcedure
     .input(
       z.object({
         id: z.number(),
@@ -57,7 +57,7 @@ export const categoriesRouter = router({
       return { success: true };
     }),
 
-  delete: adminProcedure
+  delete: adminOrLocalProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       await deleteCategory(input.id);
