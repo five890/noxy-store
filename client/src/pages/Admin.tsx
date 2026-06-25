@@ -43,7 +43,26 @@ export default function Admin() {
           <h1 className="text-4xl font-bold mb-2" style={{ color: "var(--color-white-led)", fontFamily: "var(--font-serif)" }}>
             Painel Administrativo
           </h1>
-          <p style={{ color: "var(--color-purple-muted)" }}>Gerencie sua loja e pedidos</p>
+          <div className="flex justify-between items-center">
+            <p style={{ color: "var(--color-purple-muted)" }}>Gerencie sua loja e pedidos</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={async () => {
+                try {
+                  const data = await (window as any).trpc.query("admin.diagnoseDb");
+                  console.log("DB Diagnosis:", data);
+                  alert("Diagnóstico enviado para o console (F12)");
+                } catch (e) {
+                  console.error(e);
+                  alert("Erro ao rodar diagnóstico");
+                }
+              }}
+              style={{ borderColor: "var(--color-purple-muted)", color: "var(--color-purple-muted)" }}
+            >
+              Rodar Diagnóstico
+            </Button>
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

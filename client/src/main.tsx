@@ -60,6 +60,10 @@ const trpcClient = trpc.createClient({
   ],
 });
 
+if (typeof window !== 'undefined') {
+  (window as any).trpc = trpcClient;
+}
+
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>

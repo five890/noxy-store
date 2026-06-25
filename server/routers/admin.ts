@@ -22,4 +22,21 @@ export const adminRouter = router({
       const { url } = await storagePut(key, buffer, input.mimeType);
       return { url, key };
     }),
+
+  diagnoseDb: adminProcedure.query(async () => {
+    const { getDb } = await import("../db");
+    const { sql } = await import("drizzle-orm");
+    const db = await getDb();
+    if (!db) return { error: "No DB connection" };
+    
+    const tables = await db.execute(sql`SHOW TABLES`);
+    const categoriesStructure = await db.execute(sql`DESCRIBE categories`).catch(() => "Table categories not found");
+    const productsStructure = await db.execute(sql`DESCRIBE products`).catch(() => "Table products not found");
+    
+    return {
+      tables,
+      categoriesStructure,
+      productsStructure
+    };
+  }),
 });
