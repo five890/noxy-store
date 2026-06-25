@@ -37,6 +37,11 @@ export const ordersRouter = router({
         customerName: z.string().min(1),
         customerEmail: z.string().email(),
         shippingAddress: z.string().min(1),
+        recipientName: z.string().min(1),
+        street: z.string().min(1),
+        number: z.string().min(1),
+        complement: z.string().optional(),
+        addressType: z.enum(["house", "apartment", "condominium", "commercial", "other"]),
         paymentMethod: z.enum(["stripe", "pix"]).optional(),
       })
     )
@@ -57,6 +62,11 @@ export const ordersRouter = router({
           customerName: input.customerName,
           customerEmail: input.customerEmail,
           shippingAddress: input.shippingAddress,
+          recipientName: input.recipientName,
+          street: input.street,
+          number: input.number,
+          complement: input.complement || null,
+          addressType: input.addressType,
           status: "pending",
           paymentMethod: input.paymentMethod ?? "stripe",
         },

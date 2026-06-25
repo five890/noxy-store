@@ -102,6 +102,12 @@ export const orders = mysqlTable("orders", {
   customerName: varchar("customerName", { length: 256 }),
   customerEmail: varchar("customerEmail", { length: 320 }),
   shippingAddress: text("shippingAddress"),
+  // Endereço estruturado
+  recipientName: varchar("recipientName", { length: 256 }),
+  street: varchar("street", { length: 256 }),
+  number: varchar("number", { length: 20 }),
+  complement: varchar("complement", { length: 256 }),
+  addressType: mysqlEnum("addressType", ["house", "apartment", "condominium", "commercial", "other"]),
   stripeSessionId: varchar("stripeSessionId", { length: 256 }),
   stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 256 }),
   notes: text("notes"),

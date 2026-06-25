@@ -15,7 +15,11 @@ export default function Checkout() {
   const [form, setForm] = useState({
     customerName: user?.name ?? "",
     customerEmail: user?.email ?? "",
-    shippingAddress: "",
+    recipientName: user?.name ?? "",
+    street: "",
+    number: "",
+    complement: "",
+    addressType: "house" as "house" | "apartment" | "condominium" | "commercial" | "other",
   });
 
   const { data: cart } = trpc.cart.get.useQuery(undefined, {
@@ -37,14 +41,27 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.customerName || !form.customerEmail || !form.shippingAddress) {
-      toast.error("Preencha todos os campos obrigatórios");
+    
+    // Validação
+    if (!form.customerName || !form.customerEmail) {
+      toast.error("Preencha nome e email");
+      return;
+    }
+    if (!form.recipientName || !form.street || !form.number) {
+      toast.error("Preencha todos os campos de endereço");
       return;
     }
 
     try {
       const { orderId } = await createOrder.mutateAsync({
-        ...form,
+        customerName: form.customerName,
+        customerEmail: form.customerEmail,
+        shippingAddress: `${form.street}, ${form.number}${form.complement ? `, ${form.complement}` : ""}`,
+        recipientName: form.recipientName,
+        street: form.street,
+        number: form.number,
+        complement: form.complement,
+        addressType: form.addressType,
         paymentMethod,
       });
 
@@ -111,42 +128,46 @@ export default function Checkout() {
     fontFamily: "var(--font-sans)",
   };
 
+  const selectStyle = {
+    ...inputStyle,
+  };
+
   return (
     <StoreLayout>
       {/* Header */}
       <section
-        className="py-16 border-b"
+        className="py-12 md:py-16 border-b"
         style={{
           backgroundColor: "var(--color-charcoal)",
           borderColor: "var(--color-gold-muted)",
         }}
       >
-        <div className="container text-center">
+        <div className="container text-center px-4">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-px w-16" style={{ background: "linear-gradient(90deg, transparent, var(--color-gold))" }} />
-            <span className="text-xs tracking-[0.5em] uppercase" style={{ color: "var(--color-gold)", fontFamily: "var(--font-sans)" }}>
+            <div className="h-px flex-1 md:w-16" style={{ background: "linear-gradient(90deg, transparent, var(--color-gold))" }} />
+            <span className="text-xs tracking-[0.5em] uppercase whitespace-nowrap" style={{ color: "var(--color-gold)", fontFamily: "var(--font-sans)" }}>
               Finalizar Compra
             </span>
-            <div className="h-px w-16" style={{ background: "linear-gradient(90deg, var(--color-gold), transparent)" }} />
+            <div className="h-px flex-1 md:w-16" style={{ background: "linear-gradient(90deg, var(--color-gold), transparent)" }} />
           </div>
-          <h1 className="font-serif text-5xl font-bold" style={{ color: "var(--color-ivory)" }}>
+          <h1 className="font-serif text-3xl md:text-5xl font-bold" style={{ color: "var(--color-ivory)" }}>
             Checkout
           </h1>
         </div>
       </section>
 
-      <div className="container py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container py-8 md:py-16 px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Formulário */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
               {/* Dados Pessoais */}
               <div
-                className="p-6 border relative"
+                className="p-4 md:p-6 border relative"
                 style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
               >
                 <div className="absolute top-3 left-3 w-5 h-5 border-t border-l" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-                <h2 className="font-serif text-xl font-bold mb-6" style={{ color: "var(--color-ivory)" }}>
+                <h2 className="font-serif text-lg md:text-xl font-bold mb-4 md:mb-6" style={{ color: "var(--color-ivory)" }}>
                   Dados Pessoais
                 </h2>
                 <div className="space-y-4">
@@ -176,18 +197,94 @@ export default function Checkout() {
                       style={inputStyle}
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Endereço de Entrega */}
+              <div
+                className="p-4 md:p-6 border relative"
+                style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
+              >
+                <div className="absolute top-3 left-3 w-5 h-5 border-t border-l" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
+                <h2 className="font-serif text-lg md:text-xl font-bold mb-4 md:mb-6" style={{ color: "var(--color-ivory)" }}>
+                  Endereço de Entrega
+                </h2>
+                <div className="space-y-4">
                   <div>
                     <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
-                      Endereço de Entrega *
+                      Nome do Recebedor *
                     </label>
-                    <textarea
-                      value={form.shippingAddress}
-                      onChange={(e) => setForm({ ...form, shippingAddress: e.target.value })}
+                    <input
+                      type="text"
+                      value={form.recipientName}
+                      onChange={(e) => setForm({ ...form, recipientName: e.target.value })}
                       required
-                      rows={3}
-                      className="w-full px-4 py-3 text-sm outline-none border resize-none"
+                      className="w-full px-4 py-3 text-sm outline-none border"
                       style={inputStyle}
-                      placeholder="Rua, número, complemento, cidade, estado, CEP"
+                      placeholder="Quem vai receber?"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                      Rua *
+                    </label>
+                    <input
+                      type="text"
+                      value={form.street}
+                      onChange={(e) => setForm({ ...form, street: e.target.value })}
+                      required
+                      className="w-full px-4 py-3 text-sm outline-none border"
+                      style={inputStyle}
+                      placeholder="Nome da rua"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                        Número *
+                      </label>
+                      <input
+                        type="text"
+                        value={form.number}
+                        onChange={(e) => setForm({ ...form, number: e.target.value })}
+                        required
+                        className="w-full px-4 py-3 text-sm outline-none border"
+                        style={inputStyle}
+                        placeholder="123"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                        Tipo *
+                      </label>
+                      <select
+                        value={form.addressType}
+                        onChange={(e) => setForm({ ...form, addressType: e.target.value as any })}
+                        className="w-full px-4 py-3 text-sm outline-none border"
+                        style={selectStyle}
+                      >
+                        <option value="house">Casa</option>
+                        <option value="apartment">Apartamento</option>
+                        <option value="condominium">Condomínio</option>
+                        <option value="commercial">Comercial</option>
+                        <option value="other">Outro</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase mb-2" style={{ color: "var(--color-gold-muted)", fontFamily: "var(--font-sans)" }}>
+                      Complemento (opcional)
+                    </label>
+                    <input
+                      type="text"
+                      value={form.complement}
+                      onChange={(e) => setForm({ ...form, complement: e.target.value })}
+                      className="w-full px-4 py-3 text-sm outline-none border"
+                      style={inputStyle}
+                      placeholder="Apto 101, Bloco A, etc."
                     />
                   </div>
                 </div>
@@ -195,11 +292,11 @@ export default function Checkout() {
 
               {/* Método de Pagamento */}
               <div
-                className="p-6 border relative"
+                className="p-4 md:p-6 border relative"
                 style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
               >
                 <div className="absolute top-3 left-3 w-5 h-5 border-t border-l" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-                <h2 className="font-serif text-xl font-bold mb-6" style={{ color: "var(--color-ivory)" }}>
+                <h2 className="font-serif text-lg md:text-xl font-bold mb-4 md:mb-6" style={{ color: "var(--color-ivory)" }}>
                   Método de Pagamento
                 </h2>
                 <div className="space-y-3">
@@ -219,14 +316,14 @@ export default function Checkout() {
                       onChange={(e) => setPaymentMethod(e.target.value as "stripe" | "pix")}
                       className="w-4 h-4 cursor-pointer"
                     />
-                    <div className="flex items-center gap-3">
-                      <CreditCard size={20} style={{ color: "var(--color-gold)" }} />
-                      <div>
-                        <p className="font-semibold" style={{ color: "var(--color-ivory)" }}>
-                          Cartão de Crédito (Stripe)
+                    <div className="flex items-center gap-3 flex-1">
+                      <CreditCard size={20} style={{ color: "var(--color-gold)" }} className="flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm md:text-base" style={{ color: "var(--color-ivory)" }}>
+                          Cartão de Crédito
                         </p>
                         <p className="text-xs" style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
-                          Pague com segurança usando seu cartão
+                          Pague com segurança
                         </p>
                       </div>
                     </div>
@@ -248,14 +345,14 @@ export default function Checkout() {
                       onChange={(e) => setPaymentMethod(e.target.value as "stripe" | "pix")}
                       className="w-4 h-4 cursor-pointer"
                     />
-                    <div className="flex items-center gap-3">
-                      <QrCode size={20} style={{ color: "var(--color-gold)" }} />
-                      <div>
-                        <p className="font-semibold" style={{ color: "var(--color-ivory)" }}>
+                    <div className="flex items-center gap-3 flex-1">
+                      <QrCode size={20} style={{ color: "var(--color-gold)" }} className="flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm md:text-base" style={{ color: "var(--color-ivory)" }}>
                           PIX
                         </p>
                         <p className="text-xs" style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
-                          Transferência instantânea via PIX
+                          Instantâneo e seguro
                         </p>
                       </div>
                     </div>
@@ -267,68 +364,51 @@ export default function Checkout() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 py-4 text-xs tracking-widest uppercase font-semibold transition-all hover:scale-[1.02] disabled:opacity-50"
+                className="w-full py-4 px-6 font-semibold uppercase text-sm tracking-widest flex items-center justify-center gap-3 transition-all disabled:opacity-50"
                 style={{
                   backgroundColor: "var(--color-gold)",
                   color: "var(--color-obsidian)",
                   fontFamily: "var(--font-sans)",
-                  boxShadow: "var(--shadow-gold)",
                 }}
               >
-                <Lock size={16} />
-                {isLoading ? "Processando..." : "Continuar para Pagamento"}
-                <ArrowRight size={16} />
+                {isLoading ? "Processando..." : "Confirmar Pedido"}
+                {!isLoading && <ArrowRight size={18} />}
               </button>
             </form>
           </div>
 
           {/* Resumo do Pedido */}
-          <div>
+          <div className="lg:col-span-1">
             <div
-              className="p-6 border sticky top-24 h-fit relative"
+              className="sticky top-4 p-4 md:p-6 border"
               style={{ backgroundColor: "var(--color-charcoal)", borderColor: "var(--color-gold-muted)" }}
             >
-              <div className="absolute top-3 right-3 w-5 h-5 border-b border-r" style={{ borderColor: "var(--color-gold)", opacity: 0.4 }} />
-              <h2 className="font-serif text-xl font-bold mb-6" style={{ color: "var(--color-ivory)" }}>
+              <h3 className="font-serif text-lg font-bold mb-4" style={{ color: "var(--color-ivory)" }}>
                 Resumo do Pedido
-              </h2>
-
+              </h3>
               <div className="space-y-3 mb-6 pb-6 border-b" style={{ borderColor: "var(--color-smoke)" }}>
-                {cart?.items.map((item) => {
-                  const itemTotal = Number(item.productPrice) * item.quantity;
-                  return (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>
-                        {item.productName} x{item.quantity}
-                      </span>
-                      <span style={{ color: "var(--color-gold)" }}>
-                        {itemTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                      </span>
-                    </div>
-                  );
-                })}
+                {cart?.items.map((item) => (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <span style={{ color: "var(--color-parchment)" }}>
+                      {item.productName} x{item.quantity}
+                    </span>
+                    <span style={{ color: "var(--color-gold)" }}>
+                      R$ {(Number(item.productPrice) * item.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
               </div>
-
-              <div className="space-y-2 mb-6 pb-6 border-b" style={{ borderColor: "var(--color-smoke)" }}>
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>Subtotal:</span>
-                  <span style={{ color: "var(--color-ivory)" }}>
-                    {Number(cart?.subtotal ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: "var(--color-parchment)", fontFamily: "var(--font-sans)" }}>Frete:</span>
-                  <span style={{ color: "var(--color-gold)" }}>Grátis</span>
-                </div>
-              </div>
-
               <div className="flex justify-between items-center">
-                <span className="font-serif text-lg" style={{ color: "var(--color-gold-muted)" }}>
-                  Total:
+                <span className="font-semibold" style={{ color: "var(--color-ivory)" }}>
+                  Total
                 </span>
                 <span className="font-serif text-2xl font-bold" style={{ color: "var(--color-gold)" }}>
-                  {Number(cart?.subtotal ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  R$ {Number(cart?.subtotal || 0).toFixed(2)}
                 </span>
+              </div>
+              <div className="flex items-center gap-2 mt-4 text-xs" style={{ color: "var(--color-parchment)" }}>
+                <Lock size={14} />
+                <span>Pagamento seguro</span>
               </div>
             </div>
           </div>
